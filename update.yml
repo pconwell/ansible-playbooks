@@ -1,5 +1,5 @@
 ---
-- hosts: [lxc, vms, proxmox, googlecloud]
+- hosts: [lxc, vms, proxmox, rpi, googlecloud]
   name: update apt
 
   tasks:
@@ -13,16 +13,10 @@
     apt:
       upgrade: dist
 
-  - name: remove old packages
+  - name: remove old packages and clean cache
     apt:
       autoremove: yes
-
-  - name: autoclean cache
-    apt:
       autoclean: yes
-
-  - name: clean (remove) cache
-    apt:
       clean: yes
 
   - name: check for reboot required
