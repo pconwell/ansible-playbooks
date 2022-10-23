@@ -1,0 +1,9 @@
+---
+
+- hosts: [lxc, vms, proxmox, rpi]
+  tasks:
+  - name: Creating rsyslog graylog config
+    copy:
+      dest: "/etc/rsyslog.d/60-graylog.conf"
+      content: |
+        *.* @192.168.10.101:1514;RSYSLOG_SyslogProtocol23Format
