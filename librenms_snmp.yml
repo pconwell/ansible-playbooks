@@ -1,0 +1,43 @@
+---
+
+- hosts: [lxc, vms, proxmox, rpi]
+  tasks:
+  - name: Install "snmp"
+    apt:
+      name: snmpd
+
+  - name: Set librenms compatible config for SNMP
+    copy:
+      dest: "/etc/snmp/snmpd.conf"
+      content: |
+        com2sec readonly default libre
+
+        group MyROGroup v2c readonly
+
+        view all included .1 80
+
+        access MyROGroup "" any noauth exact all none none
+
+        # Update your location here
+
+        syslocation [36.198180, -86.746417]
+        syslocation Tennessee, United States
+        syscontact Patrick Conwell <patrick.conwell@gmail.com>
+
+        # Distro Detection
+
+        extend .1.3.6.1.4.1.2021.7890.1 distro /usr/bin/distro
+
+  - name: Download snmp distro data
+    get_url:
+      url: https://raw.githubusercontent.com/librenms/librenms-agent/master/snmp/distro
+      dest: /usr/bin/distro
+      mode: '0755'
+
+  - name: restart snmp
+    ansible.builtin.shell:
+      cmd: systemctl restart snmpd
+
+  - name: enable snmp
+    ansible.builtin.shell:
+      cmd: systemctl enable snmpd
